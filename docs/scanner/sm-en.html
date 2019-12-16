@@ -1,0 +1,173 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="description" content="">
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<title>developers-guide</title>
+		
+		<!-- Set render engine for 360 browser -->
+		<meta name="renderer" content="webkit">
+
+		<!-- No Baidu Siteapp-->
+		<meta http-equiv="Cache-Control" content="no-siteapp"/>
+		
+		<!-- Add to homescreen for Chrome on Android -->
+		<meta name="mobile-web-app-capable" content="yes">
+		
+		<!-- Add to homescreen for Safari on iOS -->
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+		
+		<link rel="stylesheet" href="../../assets/css/amazeui.min.css">
+		<link rel="stylesheet" href="../../assets/css/app.css">
+		<link rel="stylesheet" href="../../css/style.css" />
+		<script src="../../assets/js/jquery.min.js"></script>
+		<script src="../../assets/js/amazeui.min.js"></script>
+	</head>
+
+	<body>
+		<div class="am-g am-g-fixed am-margin-top">
+			<div class="am-u-sm-12">
+				<a href="sm-ch.html">中文-简体</a>
+			</div>
+			<br/><br/>
+			<div class="am-u-sm-12">
+				<a href="../../index-en.html" class="am-btn am-btn-secondary">Go Home</a>
+			</div>
+			<div id="titles" style="text-align: center;">
+				<h1>ZLTD-Developers-Guide</h1> used by N2S/N2S000/N5-1D
+			</div>
+			<h2>1. Add scanner jar</h2>
+			<h3>1.1 gradle(recommend)</h3>
+			<pre><font face="Courier New">compile 'zltd.sdk.scanner:zltd-sdk-scanner-core:1.0.0'</font></pre>
+			<h3>1.2 Add jar files</h3> put
+			<a href="../../files/zltd-sdk-scanner-core-1.0.0.jar">zltd-sdk-scanner-core.jar</a> into libs in your module
+			<h3>1.3 proguard jar</h3>
+			<pre><font face="Courier New">-keep class com.zltd.industry.*{ *;}<br/>-keep class com.zltd.decoder.*{ *;}</font></pre>
+			<h2>2. How to use scanner</h2>
+			<h3>2.1 Get the scanner instance</h3>
+			<pre><font face="Courier New"><font color="#000000">ScannerManager mScannerManager = ScannerManager.getInstance();</font></font></pre>
+			<h3>2.2 Open the scanner</h3>
+			<pre><font face="Courier New"><font color="#000000">mScannerManager.scannerEnable(</font><font color="#0000ff">true</font><font color="#000000">);</font></font></pre>
+			<h3>2.3 Set the scan model</h3>
+			<pre><font face="Courier New"><font color="#000000">mScannerManager.setScanMode(ScannerManager.SCAN_SINGLE_MODE);</font><font color="#008000">// single model</font><font color="#008000"><br/>//mScannerManager.setScanMode(ScannerManager.SCAN_CONTINUOUS_MODE);// continue model</font></font></pre>
+			<h3>2.4 Set the result callback method</h3>
+			<pre><font face="Courier New"><font color="#000000">mScannerManager.setDataTransferType(ScannerManager.TRANSFER_BY_API);</font><font color="#008000">// get the result by api,callback the result</font><font color="#008000"><br/>//mScannerManager.setDataTransferType(ScannerManager.TRANSFER_BY_EDITTEXT);// fill the result in edittext</font><font color="#008000"><br/>//mScannerManager.setDataTransferType(ScannerManager.TRANSFER_BY_KEY);// post result by keyboard</font></pre>
+			<h3>2.5 Create result listeners</h3>
+					<pre><font face="Courier New"><font color="#0000ff">private </font><font color="#000000">ScannerManager.IScannerStatusListener mScannerStatusListener = </font><font color="#0000ff">new </font><font color="#000000">ScannerManager.IScannerStatusListener() {</font>
+
+    <font color="#0000ff">@Override</font>
+    <font color="#0000ff">public void </font><font color="#000000">onScannerStatusChanage(</font><font color="#0000ff">int </font><font color="#000000">status) {</font>
+    <font color="#000000">}</font>
+
+    <font color="#0000ff">@Override</font>
+    <font color="#0000ff">public void </font><font color="#000000">onScannerResultChanage(</font><font color="#0000ff">final byte</font><font color="#000000">[] result) {</font>
+
+        <font color="#0000ff">try </font><font color="#000000">{</font>
+            <font color="#ff0000">String </font><font color="#000000">resultCode = </font><font color="#0000ff">new </font><font color="#ff0000">String</font><font color="#000000">(result, </font><font color="#ff00ff">&quot;UTF-8&quot;</font><font color="#000000">);</font>
+            <font color="#008000">//resultCode is the scanner result, it callback on a work thread ,not on ui thread</font>
+        <font color="#000000">} </font><font color="#0000ff">catch </font><font color="#000000">(</font><font color="#ff0000">UnsupportedEncodingException </font><font color="#000000">e) {</font>
+            <font color="#000000">e.printStackTrace();</font>
+        <font color="#000000">}</font>
+    <font color="#000000">}</font>
+<font color="#000000">};</font></font></pre>
+			<h3>2.6 Add listeners on scannermanager</h3>
+			<pre><font face="Courier New"><font color="#000000">mScannerManager.addScannerStatusListener(mScannerStatusListener);</font></font></pre>
+			<h3>2.7 Remove the listeners</h3> If you dont't need callback anymore,call it
+			<pre><font face="Courier New"><font color="#000000">mScannerManager.removeScannerStatusListener(mScannerStatusListener);</font></font></pre>
+			<h2>3. Close scanner</h2>
+			<h3>3.1 Stop scan</h3>
+			<pre><font face="Courier New"><font color="#000000">mScannerManager.stopContinuousScan();</font></pre>
+			<h3>3.2 Close scanner</h3>
+			<pre><font face="Courier New"><font color="#000000">mScannerManager.scannerEnable(</font><font color="#0000ff">false</font><font color="#000000">);</font></font></pre>
+			<h2>4. Tips</h2> Most times,you should not close scannner,you can close it when you exit your app.
+			<h2>5. Examples</h2>
+			<pre><font face="Courier New"><font color="#0000ff">package </font><font color="#000000">com.zltd.demo.scan;</font>
+
+<font color="#0000ff">import </font><font color="#000000">android.app.Activity;</font>
+<font color="#0000ff">import </font><font color="#000000">android.os.Handler</font><font color="#000000">;</font>
+<font color="#0000ff">import </font><font color="#000000">android.os.Looper;</font>
+<font color="#0000ff">import </font><font color="#000000">android.widget.Toast;</font>
+
+<font color="#0000ff">import </font><font color="#000000">com.zltd.industry.ScannerManager;</font>
+<font color="#0000ff">import </font><font color="#000000">com.zltd.industry.ScannerManager.IScannerStatusListener;</font>
+
+<font color="#0000ff">import </font><font color="#000000">java.io.UnsupportedEncodingException</font><font color="#000000">;</font>
+
+<font color="#0000ff">public class </font><font color="#000000">ZLTDScannerActivity </font><font color="#0000ff">extends </font><font color="#000000">Activity {</font>
+    <font color="#0000ff">protected </font><font color="#000000">ScannerManager mScannerManager = ScannerManager.getInstance();</font>
+    <font color="#0000ff">private </font><font color="#000000">Handler mMainHandler = </font><font color="#0000ff">new</font><font color="#000000"> Handler(Looper.getMainLooper());</font>
+    <font color="#0000ff">private </font><font color="#000000">IScannerStatusListener mScannerStatusListener = </font><font color="#0000ff">new </font><font color="#000000">IScannerStatusListener() {</font>
+
+        <font color="#0000ff">@Override</font>
+        <font color="#0000ff">public void </font><font color="#000000">onScannerStatusChanage(</font><font color="#0000ff">int </font><font color="#000000">status) {</font>
+        <font color="#000000">}</font>
+
+        <font color="#0000ff">@Override</font>
+        <font color="#0000ff">public void </font><font color="#000000">onScannerResultChanage(</font><font color="#0000ff">final byte</font><font color="#000000">[] result) {</font>
+
+            <font color="#0000ff">try </font><font color="#000000">{</font>
+                <font color="#0000ff">final </font><font color="#ff0000">String </font><font color="#000000">resultCode = </font><font color="#0000ff">new </font><font color="#ff0000">String</font><font color="#000000">(result, </font><font color="#ff00ff">&quot;UTF-8&quot;</font><font color="#000000">);</font>
+                <font color="#000000">mMainHandler.post(</font><font color="#0000ff">new </font><font color="#ff0000">Runnable</font><font color="#000000">() {</font>
+                    <font color="#0000ff">@Override</font>
+                    <font color="#0000ff">public void </font><font color="#000000">run() {</font>
+                        <font color="#000000">onScannedSuccess(resultCode);</font>
+                    <font color="#000000">}</font>
+                <font color="#000000">});</font>
+            <font color="#000000">} </font><font color="#0000ff">catch </font><font color="#000000">(</font><font color="#ff0000">UnsupportedEncodingException </font><font color="#000000">e) {</font>
+                <font color="#000000">e.printStackTrace();</font>
+            <font color="#000000">}</font>
+        <font color="#000000">}</font>
+    <font color="#000000">};</font>
+
+    <font color="#0000ff">@Override</font>
+    <font color="#0000ff">protected void </font><font color="#000000">onResume() {</font>
+        <font color="#0000ff">super</font><font color="#000000">.onResume();</font>
+        <font color="#000000">mScannerManager.scannerEnable(</font><font color="#0000ff">true</font><font color="#000000">);</font>
+        <font color="#008000">// single shot</font>
+        <font color="#000000">mScannerManager.setScanMode(ScannerManager.SCAN_SINGLE_MODE);</font>
+
+        <font color="#008000">// continue shot</font>
+        <font color="#008000">//mScannerManager.setScanMode(ScannerManager.SCAN_CONTINUOUS_MODE);</font>
+
+        <font color="#008000">// API model</font>
+        <font color="#000000">mScannerManager.setDataTransferType(ScannerManager.TRANSFER_BY_API);</font>
+
+        <font color="#008000">// fill in edittext</font>
+        <font color="#008000">//mScannerManager.setDataTransferType(ScannerManager.TRANSFER_BY_EDITTEXT);</font>
+
+        <font color="#008000">// post by keyboard</font>
+        <font color="#008000">//mScannerManager.setDataTransferType(ScannerManager.TRANSFER_BY_KEY);</font>
+
+
+        <font color="#008000">// add listeners</font>
+        <font color="#000000">mScannerManager.addScannerStatusListener(mScannerStatusListener);</font>
+    <font color="#000000">}</font>
+
+    <font color="#0000ff">@Override</font>
+    <font color="#0000ff">protected void </font><font color="#000000">onDestroy() {</font>
+        <font color="#0000ff">super</font><font color="#000000">.onDestroy();</font>
+        <font color="#008000">// no need to close</font>
+        <font color="#008000">// remove listeners</font>
+        <font color="#000000">mScannerManager.removeScannerStatusListener(mScannerStatusListener);</font>
+        <font color="#008000">// stop scanner</font>
+        <font color="#000000">mScannerManager.stopContinuousScan();</font>
+        <font color="#008000">// close scanner</font>
+        <font color="#000000">mScannerManager.scannerEnable(</font><font color="#0000ff">false</font><font color="#000000">);</font>
+    <font color="#000000">}</font>
+
+    <font color="#0000ff">protected void </font><font color="#000000">onScannedSuccess(</font><font color="#ff0000">String </font><font color="#000000">barcode) {</font>
+        <font color="#000000">Toast.makeText(</font><font color="#0000ff">this</font><font color="#000000">, barcode, Toast.LENGTH_SHORT).show();</font>
+    <font color="#000000">}</font>
+
+<font color="#000000">}</font></font>
+</pre>
+		</div>
+	</body>
+
+</html>
